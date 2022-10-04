@@ -33,15 +33,15 @@ environement python en interface graphique (pygame)
 backlog :
 -creation de la fenêtre-------------------------------#30min
 -création du plateau à N² cases-----------------------#30min
--création d'un serpent 1 fonctionnel:-----------------#2h
+-création d'un serpent 1 fonctionnel:-----------------#2h30
 	-creation d'un serpent d'une taille 7 cases
 	-ajout de déplacement du serpent avec les controls de l'utilisateur
 	-si un serpent touche un mur, le faire mourir
--ajout de nouriture :---------------------------------#2h
+-ajout de nouriture :---------------------------------#2h30
 	-faire apparaitre une case nouriture
 	-quand un serpent mange, il dois grandir
 	-faire réaparaitre la nouriture si elle est mangé
--ajout de 1-3 serpents fonctionnel de la même façons que le serpent 1 :#4h
+-ajout de 1-3 serpents fonctionnel de la même façons que le serpent 1 :#2h30
 	-ajout des serpent
 	-ajout de la colision entre serpent (si collision, le serpent devient un obstacle)
 -ajou de fonctionnalité de fin :
