@@ -1,4 +1,4 @@
-from random import choice, randint
+from random import randint
 from pygame.locals import *
 import threading
 import pygame
@@ -9,19 +9,19 @@ import pygame
 
 
 ##var/lists global
-size_screen = (1200, 1000)
+size_screen = (1000, 1000)
 hold_clic = False
-fps = 1
+fps = 30
 plat_size = (10,10)
+nb_player = 1
 
 
 plateau = {}
 for y in range(plat_size[1]) :
     for x in range(plat_size[0]) :
-        plateau[(x,y)] = "vide"
+        plateau[(x,y)] = "vide" #"nour" = nouriture, "p1r" = player 1 rouge, "p2b" = player 2 bleu.... 
 
 
-print(plateau)
 
 
 
@@ -37,11 +37,10 @@ watch_end_loop = False
 
 
 
-exit()
 
 ####init pygame
 pygame.init()
-pygame.display.set_caption("brain test")
+pygame.display.set_caption("multi snake")
 
 #Ouverture de la fenêtre Pygame
 window = pygame.display.set_mode(size_screen)

@@ -30,19 +30,22 @@ fonctionnalité à ajouter a la suite :
 environement python en interface graphique (pygame)
 
 
-user story :
--creation de la fenêtre milleparmille
--création du plateau à N² cases
--création d'un serpent 1 fonctionnel:
-	-c
+backlog :
+-creation de la fenêtre-------------------------------#30min
+-création du plateau à N² cases-----------------------#30min
+-création d'un serpent 1 fonctionnel:-----------------#2h
+	-creation d'un serpent d'une taille 7 cases
+	-ajout de déplacement du serpent avec les controls de l'utilisateur
+	-si un serpent touche un mur, le faire mourir
+-ajout de nouriture :---------------------------------#2h
+	-faire apparaitre une case nouriture
+	-quand un serpent mange, il dois grandir
+	-faire réaparaitre la nouriture si elle est mangé
+-ajout de 1-3 serpents fonctionnel de la même façons que le serpent 1 :#4h
+	-ajout des serpent
+	-ajout de la colision entre serpent (si collision, le serpent devient un obstacle)
+-ajou de fonctionnalité de fin :
+	-ajout d'un menu permetant de choisir le nombre de joueurs
+	-ajout de pouvoir recommencer la partie
 
-
--ajout d'une fonctionnalité de tournois :
-	-implémenté la victoire
-	-impleter les nouveaux match:
-		-reinitialiser la map
-		-changer les IA des equipe
-	-faire que les nouveaux matche coresponde aux victoire
-	-afficher resultat.
-	-pllusieur combat en meme temps
 
