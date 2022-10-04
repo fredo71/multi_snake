@@ -1,0 +1,48 @@
+Méthode kanban : 
+WIP = INFINI en TODO
+WIP = 2 en DEV
+WIP = 2 EN TEST un autre DEV TEST
+WIP = 1 Deploy
+
+Test unitaire en croix (un dev test les fonctionnalité de l'autre dev) / revue
+gestion des fichier et modifications via Github
+paire programing pour les parties ne pouvant pas être faites en simultané
+
+
+
+
+
+
+
+Idée : Snake en multijoueur local
+
+fonctionnement global de base:
+	Un plateau de N x N de N² cases vide
+	2-4 joueurs Maximum en local
+	Quand un snake est mort, sont corps deviens un obstacle
+
+
+
+fonctionnalité à ajouter a la suite :
+
+
+
+environement python en interface graphique (pygame)
+
+
+user story :
+-creation de la fenêtre milleparmille
+-création du plateau à N² cases
+-création d'un serpent 1 fonctionnel:
+	-c
+
+
+-ajout d'une fonctionnalité de tournois :
+	-implémenté la victoire
+	-impleter les nouveaux match:
+		-reinitialiser la map
+		-changer les IA des equipe
+	-faire que les nouveaux matche coresponde aux victoire
+	-afficher resultat.
+	-pllusieur combat en meme temps
+
