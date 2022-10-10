@@ -29,9 +29,9 @@ nourriture_coord = None
 plateau = {}
 for y in range(plat_size[1]) :
     for x in range(plat_size[0]) :
-        plateau[(x,y)] = "vide" #"nourriture" = nouriture, "p0" = player 1 rouge, "p1" = player 2 bleu.... 
+        plateau[(x,y)] = "vide" #"nourriture" = nouriture, "p0" = player 1 rouge, "p1" = player 2 bleu....
 
-nb_player = 1
+nb_player = 2
 snake = []
 for k in range(nb_player) :
     snake.append({"position" : [(20-p, 7*(k+1)) for p in range(7)], "direction" : "right", "mort" : False})
@@ -186,8 +186,8 @@ thread_anti_hold_clic.start()
 
 #Boucle infinie
 while main_loop:
-    
-    
+
+
     if bataille_loop :
         add_nourriture()
     while bataille_loop : #boucle du menu      ########\\\\\\\\\\\\\rajouter de la nourriture si elle est mangée
@@ -210,25 +210,44 @@ while main_loop:
             elif  event.type == KEYUP and event.key ==  K_s and plateau[(snake[0]["position"][0][0]-1, snake[0]["position"][0][1]+1)] == "vide":
                 snake[0]["direction"] = "down"
 
+#jourur deux
+            if  event.type == KEYUP and event.key ==  K_k and plateau[(snake[1]["position"][0][0]-1, snake[1]["position"][0][1])] == "vide": #ajouter les limites
+                snake[1]["direction"] = "left"
+            elif  event.type == KEYUP and event.key ==  K_m and plateau[(snake[1]["position"][0][0]+1, snake[1]["position"][0][1])] == "vide":
+                snake[1]["direction"] = "right"
+            elif  event.type == KEYUP and event.key ==  K_o and plateau[(snake[1]["position"][0][0], snake[1]["position"][0][1]-1)] == "vide":
+                snake[1]["direction"] = "up"
+            elif  event.type == KEYUP and event.key ==  K_l and plateau[(snake[1]["position"][0][0]-1, snake[1]["position"][0][1]+1)] == "vide":
+                print("bol")
+                snake[1]["direction"] = "down"
+
+
+
+
+
+
+
+
+
         for k in range(len(snake)) :
             tamp = deplacement(k)
 #            if tamp == False :
 #                snake[k]["mort"] = True
 #                for c in snake[k]["position"] :
 #                    plateau[snake[k]["position"][c]] = "snake_dead"
-    
+
         window.blit(bg_in_game, (0,0))
 
-        #affichage des serpents 
+        #affichage des serpents
         for k in range(len(snake)) :
             for p in range(len(snake[k]["position"])) :
                 window.blit(snake_corps_p1, (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
-        
+
         #affichage nourriture
         window.blit(im_nourriture, (nourriture_coord[0]*taille_case, nourriture_coord[1]*taille_case, nourriture_coord[0]*taille_case+taille_case, nourriture_coord[1]*taille_case+taille_case))
 
         pygame.display.flip()
-    
+
 
 
     while watch_end_loop :
@@ -248,7 +267,7 @@ while main_loop:
             if event.type == QUIT or keys[K_LSHIFT] and keys[K_ESCAPE] :     #Si un de ces événements est de type QUIT
                 main_loop = False
                 watch_end_loop = False
-        
+
         pygame.display.flip()
 
 
@@ -258,3 +277,4 @@ sourie : {mouse_up, clic gauche, mouse_doawn, clic droit} = player 2
 flèche directionnel = player 3
 jn,; ou ijkl = player 4
 """
+exit()
