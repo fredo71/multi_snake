@@ -32,6 +32,7 @@ plat_size = (30,30) #spawn des snake 7, 14, 21, 28
 taille_case = 30 #pixels
 nourriture_coord = None
 nb_case_a_mourir = 2
+case_mur = []
 
 
 plateau = {}
@@ -88,6 +89,7 @@ snake_corps_p1_mort = pygame.transform.scale(pygame.image.load(resource_path0(".
 snake_corps_p2 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p2_corps_snake.png")).convert_alpha(), (conv_sizex(30),conv_sizex(30)))
 snake_corps_p2_mort = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p2_corps_snake_mort.png")).convert_alpha(), (conv_sizex(30),conv_sizex(30)))
 
+mur_im = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/mur.png")).convert_alpha(), (conv_sizex(30),conv_sizex(30)))
 
 im_nourriture = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/autre/food.png")).convert_alpha(), (conv_sizex(30),conv_sizex(30)))
 
@@ -111,6 +113,7 @@ bg_in_game = pygame.transform.scale(pygame.image.load(resource_path0("./assets/i
 
 def deplacement(ind_snake) :
     global snake
+    print("dep-", snake[ind_snake]["direction"])
     #test si serpent va mourir
     try :
         depx, depy = 0,0
@@ -122,6 +125,7 @@ def deplacement(ind_snake) :
             depy = -1
         elif snake[ind_snake]["direction"] == "down" :
             depy = 1
+        print(plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)])
         if plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] not in ["vide", "nourriture"] : #si le serpent va mourir
             return False
         elif plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] == "nourriture" : #si le serpent va manger
@@ -160,14 +164,11 @@ def add_nourriture():
         nourriture_coord = tamp
 
 def retourne (snakee):
-    for k in range (len(snakee)):
-        new_snakee= []
-        new_snakee.append(snakee[len(snakee)-k])
+    snakee.reverse()
+    return snakee
 
 
 def cherche_dirrection (snakee) :
-    cube1 =snakee[0]
-    cube2 =snakee[1]
     cube1_x =snakee[0][0]
     cube2_x =snakee[1][0]
     cube1_y =snakee[0][1]
@@ -263,25 +264,21 @@ while main_loop:
             if snake[k]["mort"] == False :
                 tamp = deplacement(k)
             if tamp == False :
-<<<<<<< Updated upstream
-                snake[k]["mort"] = True
-                for c in snake[k]["position"] :
-                    plateau[c] = "snake_dead"
-
-=======
                 try :
-                    for k in range(nb_case_a_mourir) :
-                        snake[k]["position"].pop(-1)
+                    for p in range(nb_case_a_mourir) :
+                        plateau[snake[k]["position"][0]] = "mur"
+                        case_mur.append(snake[k]["position"][0])
+                        snake[k]["position"].pop(0)
                     snake[k]["position"] = retourne(snake[k]["position"])
-                    snake[k]["direction"] = change_direction(snake[k]["position"])
+                    snake[k]["direction"] = cherche_dirrection(snake[k]["position"])
                 except :
                     snake[k]["mort"] = True
 
                 
     
->>>>>>> Stashed changes
         window.blit(bg_in_game, (0,0))
-
+        for p in range(len(case_mur)) :
+            window.blit(mur_im, (case_mur[p][0]*taille_case, case_mur[p][1]*taille_case, case_mur[p][0]*taille_case+taille_case, case_mur[p][1]*taille_case+taille_case))
 
         #affichage des serpents
         for k in range(len(snake)) :
@@ -303,25 +300,7 @@ while main_loop:
 
 
 
-    while watch_end_loop :
 
-
-		#Limitation de vitesse de la boucle
-        clock.tick(fps) # 30 fps
-        X, Y = pygame.mouse.get_pos()
-        if conv_sizex(780) < X < conv_sizex(1143) and  conv_sizey(900) < Y < conv_sizey(1018) : #clic sur quitter
-            survole_quitter = True
-            if pygame.mouse.get_pressed()[0] and hold_clic == False : #clic avec le clic gauche
-                pass
-
-        #events clavier
-        keys = pygame.key.get_pressed()
-        for event in pygame.event.get():   #On parcours la liste de tous les événements reçus
-            if event.type == QUIT or keys[K_LSHIFT] and keys[K_ESCAPE] :     #Si un de ces événements est de type QUIT
-                main_loop = False
-                watch_end_loop = False
-
-        pygame.display.flip()
 
 
 """ touche affilié à quelle player :
