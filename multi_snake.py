@@ -20,7 +20,7 @@ def resource_path0(relative_path):
 ##var/lists global
 size_screen = (900, 900)
 hold_clic = False
-fps = 5
+fps = 2
 plat_size = (30,30) #spawn des snake 7, 14, 21, 28
 taille_case = 30 #pixels
 nourriture_coord = None
@@ -34,8 +34,7 @@ for y in range(plat_size[1]) :
 nb_player = 1
 snake = []
 for k in range(nb_player) :
-    snake.append({"position" : [(20-p, 7) for p in range(7)], "color" : "red", "direction" : "right", "mort" : False})
-    
+    snake.append({"position" : [(20-p, 7*(k+1)) for p in range(7)], "direction" : "right", "mort" : False})
 for k in range(len(snake)) :
     for p in range(len(snake[k]["position"])) :
         plateau[snake[k]["position"][p]] = "p"+str(k)
@@ -237,6 +236,11 @@ while main_loop:
 
 		#Limitation de vitesse de la boucle
         clock.tick(fps) # 30 fps
+        X, Y = pygame.mouse.get_pos()
+        if conv_sizex(780) < X < conv_sizex(1143) and  conv_sizey(900) < Y < conv_sizey(1018) : #clic sur quitter
+            survole_quitter = True
+            if pygame.mouse.get_pressed()[0] and hold_clic == False : #clic avec le clic gauche
+                pass
 
         #events clavier
         keys = pygame.key.get_pressed()
