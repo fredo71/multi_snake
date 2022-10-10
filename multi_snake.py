@@ -4,6 +4,8 @@ import threading
 import pygame
 import sys
 import os
+import pyautogui
+
 
 
 #utile pour le passage en .exe
@@ -16,9 +18,14 @@ def resource_path0(relative_path):
     return os.path.join(base_path, relative_path)
 
 
+def conv_sizex(x):
+    return int(size_screen[0]*x/(0.83333*taille_screeny))
+def conv_sizey(y):
+    return int(size_screen[1]*y/(0.83333*taille_screeny))
+taille_screenx, taille_screeny = pyautogui.size()
 
 ##var/lists global
-size_screen = (900, 900)
+size_screen = (0.83333*taille_screeny, 0.83333*taille_screeny)
 hold_clic = False
 fps = 4
 plat_size = (30,30) #spawn des snake 7, 14, 21, 28
@@ -75,14 +82,13 @@ font3 = pygame.font.SysFont("comicsansms", int(size_screen[0]/18))
 
 
 
+snake_corps_p1 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p1_corps_snake.png")).convert_alpha(), (conv_sizex(30),conv_sizey(30)))
+snake_corps_p1_mort = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p1_corps_snake_mort.png")).convert_alpha(), (conv_sizex(30),conv_sizex(30)))
+snake_corps_p2 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p2_corps_snake.png")).convert_alpha(), (conv_sizex(30),conv_sizex(30)))
+snake_corps_p2_mort = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p2_corps_snake_mort.png")).convert_alpha(), (conv_sizex(30),conv_sizex(30)))
 
-snake_corps_p1 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p1_corps_snake.png")).convert_alpha(), (30,30))
-snake_corps_p1_mort = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p1_corps_snake_mort.png")).convert_alpha(), (30,30))
-snake_corps_p2 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p2_corps_snake.png")).convert_alpha(), (30,30))
-snake_corps_p2_mort = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p2_corps_snake_mort.png")).convert_alpha(), (30,30))
 
-
-im_nourriture = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/autre/food.png")).convert_alpha(), (30,30))
+im_nourriture = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/autre/food.png")).convert_alpha(), (conv_sizex(30),conv_sizex(30)))
 
 bg_in_game = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/background/bg_in_game.png")).convert(), size_screen)
 
@@ -97,10 +103,7 @@ bg_in_game = pygame.transform.scale(pygame.image.load(resource_path0("./assets/i
 
 #####fonction auxilière
 
-def conv_sizex(x):
-    return int(size_screen[0]*x/900)
-def conv_sizey(y):
-    return int(size_screen[1]*y/900)
+
 
 
 
