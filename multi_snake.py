@@ -20,7 +20,7 @@ def resource_path0(relative_path):
 ##var/lists global
 size_screen = (900, 900)
 hold_clic = False
-fps = 2
+fps = 4
 plat_size = (30,30) #spawn des snake 7, 14, 21, 28
 taille_case = 30 #pixels
 nourriture_coord = None
@@ -77,6 +77,7 @@ font3 = pygame.font.SysFont("comicsansms", int(size_screen[0]/18))
 
 
 snake_corps_p1 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p1_corps_snake.png")).convert_alpha(), (30,30))
+snake_corps_p1_mort = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p1_corps_snake_mort.png")).convert_alpha(), (30,30))
 
 
 im_nourriture = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/autre/food.png")).convert_alpha(), (30,30))
@@ -105,34 +106,34 @@ def conv_sizey(y):
 def deplacement(ind_snake) :
     global snake
     #test si serpent va mourir
-    depx, depy = 0,0
-    if snake[ind_snake]["direction"] == "right" :
-        depx = 1
-    elif snake[ind_snake]["direction"] == "left" :
-        depx = -1
-    elif snake[ind_snake]["direction"] == "up" :
-        depy = -1
-    elif snake[ind_snake]["direction"] == "down" :
-        depy = 1
-    print(plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)])
-    if plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] not in ["vide", "nourriture"] : #si le serpent va mourir
-        print("ikuuui")
+    try :
+        depx, depy = 0,0
+        if snake[ind_snake]["direction"] == "right" :
+            depx = 1
+        elif snake[ind_snake]["direction"] == "left" :
+            depx = -1
+        elif snake[ind_snake]["direction"] == "up" :
+            depy = -1
+        elif snake[ind_snake]["direction"] == "down" :
+            depy = 1
+        if plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] not in ["vide", "nourriture"] : #si le serpent va mourir
+            return False
+        elif plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] == "nourriture" : #si le serpent va manger
+            snake[ind_snake]["position"].insert(0, (snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy))
+            plateau[snake[ind_snake]["position"][0]] = "p"+str(ind_snake)
+            add_nourriture()
+        else : #si le serpent se déplace simplement
+            tamp = snake[ind_snake]["position"][0]
+            tamp2 = snake[ind_snake]["position"][len(snake[ind_snake]["position"])-1]
+            snake[ind_snake]["position"][0] = (snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)
+            for k in range(1,len(snake[ind_snake]["position"])) :
+                snake[ind_snake]["position"][k], tamp = tamp, snake[ind_snake]["position"][k]
+
+            for p in range(len(snake[ind_snake]["position"])) :
+                plateau[snake[ind_snake]["position"][p]] = "p"+str(ind_snake)
+            plateau[tamp2] = "vide"
+    except :
         return False
-    elif plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] == "nourriture" : #si le serpent va manger
-        snake[ind_snake]["position"].insert(0, (snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy))
-        plateau[snake[ind_snake]["position"][0]] = "p"+str(ind_snake)
-        add_nourriture()
-    else : #si le serpent se déplace simplement
-        tamp = snake[ind_snake]["position"][0]
-        tamp2 = snake[ind_snake]["position"][len(snake[ind_snake]["position"])-1]
-        snake[ind_snake]["position"][0] = (snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)
-        for k in range(1,len(snake[ind_snake]["position"])) :
-            snake[ind_snake]["position"][k], tamp = tamp, snake[ind_snake]["position"][k]
-
-        for p in range(len(snake[ind_snake]["position"])) :
-            plateau[snake[ind_snake]["position"][p]] = "p"+str(ind_snake)
-        plateau[tamp2] = "vide"
-
     return True
 
 def add_nourriture():
@@ -232,18 +233,22 @@ while main_loop:
 
         for k in range(len(snake)) :
             tamp = deplacement(k)
-#            if tamp == False :
-#                snake[k]["mort"] = True
-#                for c in snake[k]["position"] :
-#                    plateau[snake[k]["position"][c]] = "snake_dead"
-
+            if tamp == False :
+                snake[k]["mort"] = True
+                for c in snake[k]["position"] :
+                    plateau[c] = "snake_dead"
+    
         window.blit(bg_in_game, (0,0))
 
-        #affichage des serpents
+
+        #affichage des serpents 
         for k in range(len(snake)) :
             for p in range(len(snake[k]["position"])) :
-                window.blit(snake_corps_p1, (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
-
+                if snake[k]["mort"] :
+                    window.blit(snake_corps_p1_mort, (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                else :
+                    window.blit(snake_corps_p1, (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+        
         #affichage nourriture
         window.blit(im_nourriture, (nourriture_coord[0]*taille_case, nourriture_coord[1]*taille_case, nourriture_coord[0]*taille_case+taille_case, nourriture_coord[1]*taille_case+taille_case))
 
