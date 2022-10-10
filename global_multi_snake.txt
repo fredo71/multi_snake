@@ -31,11 +31,7 @@ environement python en interface graphique (pygame)
 
 
 backlog :
--creation de l'environement et initialisation : 2h30
-	-creation de la fenêtre
-	-creation menu, choix local, en ligne
-	-creation sous menu local (choix du nombre de joueur + démarer
-	-création du plateau à N² cases (par défaut, 30 x 30)
+
 -création d'un serpent 1 fonctionnel:-----------------#2h30
 	-creation d'un serpent d'une taille 7 cases
 	-ajout de déplacement du serpent avec les controls de l'utilisateur
@@ -51,5 +47,9 @@ backlog :
 	-ajout du mode en ligne
 	-pouvoir augmenter la taille du jeu
 	-ajout de skin des serpents
-
+-creation de l'environement et initialisation : 2h30
+	-creation de la fenêtre
+	-creation menu, choix local, en ligne
+	-creation sous menu local (choix du nombre de joueur + démarer
+	-création du plateau à N² cases (par défaut, 30 x 30)
 
