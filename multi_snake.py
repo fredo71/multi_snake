@@ -78,6 +78,8 @@ font3 = pygame.font.SysFont("comicsansms", int(size_screen[0]/18))
 
 snake_corps_p1 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p1_corps_snake.png")).convert_alpha(), (30,30))
 snake_corps_p1_mort = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p1_corps_snake_mort.png")).convert_alpha(), (30,30))
+snake_corps_p2 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p2_corps_snake.png")).convert_alpha(), (30,30))
+snake_corps_p2_mort = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p2_corps_snake_mort.png")).convert_alpha(), (30,30))
 
 
 im_nourriture = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/autre/food.png")).convert_alpha(), (30,30))
@@ -202,26 +204,26 @@ while main_loop:
             if event.type == QUIT or keys[K_LSHIFT] and keys[K_ESCAPE] :     #Si un de ces événements est de type QUIT
                 main_loop = False
                 bataille_loop = False
-            elif  event.type == KEYUP and event.key ==  K_q and plateau[(snake[0]["position"][0][0]-1, snake[0]["position"][0][1])] == "vide": #ajouter les limites
-                snake[0]["direction"] = "left"
-            elif  event.type == KEYUP and event.key ==  K_d and plateau[(snake[0]["position"][0][0]+1, snake[0]["position"][0][1])] == "vide":
-                snake[0]["direction"] = "right"
-            elif  event.type == KEYUP and event.key ==  K_z and plateau[(snake[0]["position"][0][0], snake[0]["position"][0][1]-1)] == "vide":
-                snake[0]["direction"] = "up"
-            elif  event.type == KEYUP and event.key ==  K_s and plateau[(snake[0]["position"][0][0]-1, snake[0]["position"][0][1]+1)] == "vide":
-                snake[0]["direction"] = "down"
+            if nb_player >= 1 and snake[0]["mort"] == False :
+                if  event.type == KEYUP and event.key ==  K_q and plateau[(snake[0]["position"][0][0]-1, snake[0]["position"][0][1])] == "vide": #ajouter les limites
+                    snake[0]["direction"] = "left"
+                elif  event.type == KEYUP and event.key ==  K_d and plateau[(snake[0]["position"][0][0]+1, snake[0]["position"][0][1])] == "vide":
+                    snake[0]["direction"] = "right"
+                elif  event.type == KEYUP and event.key ==  K_z and plateau[(snake[0]["position"][0][0], snake[0]["position"][0][1]-1)] == "vide":
+                    snake[0]["direction"] = "up"
+                elif  event.type == KEYUP and event.key ==  K_s and plateau[(snake[0]["position"][0][0], snake[0]["position"][0][1]+1)] == "vide":
+                    snake[0]["direction"] = "down"
 
-#jourur deux
-
-            if  event.type == KEYUP and event.key ==  K_k and plateau[(snake[1]["position"][0][0]-1, snake[1]["position"][0][1])] == "vide": #ajouter les limites
-                snake[1]["direction"] = "left"
-            elif  event.type == KEYUP and event.key ==  K_m and plateau[(snake[1]["position"][0][0]+1, snake[1]["position"][0][1])] == "vide":
-                snake[1]["direction"] = "right"
-            elif  event.type == KEYUP and event.key ==  K_o and plateau[(snake[1]["position"][0][0], snake[1]["position"][0][1]-1)] == "vide":
-                snake[1]["direction"] = "up"
-            elif  event.type == KEYUP and event.key ==  K_l and plateau[(snake[1]["position"][0][0]-1, snake[1]["position"][0][1]+1)] == "vide":
-                print("bol")
-                snake[1]["direction"] = "down"
+#joueur deux
+            if nb_player >= 2 and snake[1]["mort"] == False :
+                if  event.type == KEYUP and event.key ==  K_k and plateau[(snake[1]["position"][0][0]-1, snake[1]["position"][0][1])] == "vide": #ajouter les limites
+                    snake[1]["direction"] = "left"
+                elif  event.type == KEYUP and event.key ==  K_m and plateau[(snake[1]["position"][0][0]+1, snake[1]["position"][0][1])] == "vide":
+                    snake[1]["direction"] = "right"
+                elif  event.type == KEYUP and event.key ==  K_o and plateau[(snake[1]["position"][0][0], snake[1]["position"][0][1]-1)] == "vide":
+                    snake[1]["direction"] = "up"
+                elif  event.type == KEYUP and event.key ==  K_l and plateau[(snake[1]["position"][0][0], snake[1]["position"][0][1]+1)] == "vide":
+                    snake[1]["direction"] = "down"
 
 
 
@@ -232,7 +234,8 @@ while main_loop:
 
 
         for k in range(len(snake)) :
-            tamp = deplacement(k)
+            if snake[k]["mort"] == False :
+                tamp = deplacement(k)
             if tamp == False :
                 snake[k]["mort"] = True
                 for c in snake[k]["position"] :
@@ -245,10 +248,15 @@ while main_loop:
         for k in range(len(snake)) :
             for p in range(len(snake[k]["position"])) :
                 if snake[k]["mort"] :
-                    window.blit(snake_corps_p1_mort, (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                    if k == 0 :
+                        window.blit(snake_corps_p1_mort, (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                    elif k == 1 :
+                        window.blit(snake_corps_p2_mort, (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                 else :
-                    window.blit(snake_corps_p1, (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
-        
+                    if k == 0 :
+                        window.blit(snake_corps_p1, (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                    elif k == 1 :
+                        window.blit(snake_corps_p2, (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
         #affichage nourriture
         window.blit(im_nourriture, (nourriture_coord[0]*taille_case, nourriture_coord[1]*taille_case, nourriture_coord[0]*taille_case+taille_case, nourriture_coord[1]*taille_case+taille_case))
 
