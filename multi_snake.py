@@ -27,7 +27,7 @@ taille_screenx, taille_screeny = pyautogui.size()
 ##var/lists global
 size_screen = (0.83333*taille_screeny, 0.83333*taille_screeny)
 hold_clic = False
-fps = 4
+fps = 3
 plat_size = (30,30) #spawn des snake 7, 14, 21, 28
 taille_case = 30 #pixels
 nourriture_coord = None
@@ -141,6 +141,8 @@ def deplacement(ind_snake) :
         return False
     return True
 
+
+
 def add_nourriture():
     global plateau, nourriture_coord
     L_tamp = []
@@ -155,10 +157,29 @@ def add_nourriture():
         plateau[tamp] = "nourriture"
         nourriture_coord = tamp
 
+def retourne (snakee):
+    for k in range (len(snakee)):
+        new_snakee= []
+        new_snakee.append(snakee[len(snakee)-k])
 
 
+def cherche_dirrection (snakee) :
+    cube1 =snakee[0]
+    cube2 =snakee[1]
+    cube1_x =snakee[0][0]
+    cube2_x =snakee[1][0]
+    cube1_y =snakee[0][1]
+    cube2_y =snakee[1][1]
 
-
+    if cube1_x-cube2_x <0:
+        direction = "left"
+    elif cube1_x-cube2_x >0:
+        direction = "right"
+    elif cube1_y-cube2_y <0:
+        direction = "up"
+    else:
+        direction = "down"
+    return direction
 
 #threads
 def anti_hold_clic():
@@ -243,11 +264,11 @@ while main_loop:
                 snake[k]["mort"] = True
                 for c in snake[k]["position"] :
                     plateau[c] = "snake_dead"
-    
+
         window.blit(bg_in_game, (0,0))
 
 
-        #affichage des serpents 
+        #affichage des serpents
         for k in range(len(snake)) :
             for p in range(len(snake[k]["position"])) :
                 if snake[k]["mort"] :
