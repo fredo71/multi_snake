@@ -211,6 +211,7 @@ while main_loop:
                 snake[0]["direction"] = "down"
 
 #jourur deux
+
             if  event.type == KEYUP and event.key ==  K_k and plateau[(snake[1]["position"][0][0]-1, snake[1]["position"][0][1])] == "vide": #ajouter les limites
                 snake[1]["direction"] = "left"
             elif  event.type == KEYUP and event.key ==  K_m and plateau[(snake[1]["position"][0][0]+1, snake[1]["position"][0][1])] == "vide":
