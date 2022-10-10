@@ -1,4 +1,4 @@
-from random import randint, choice
+from random import choice
 from pygame.locals import *
 import threading
 import pygame
@@ -31,6 +31,7 @@ fps = 3
 plat_size = (30,30) #spawn des snake 7, 14, 21, 28
 taille_case = 30 #pixels
 nourriture_coord = None
+nb_case_a_mourir = 2
 
 
 plateau = {}
@@ -144,7 +145,8 @@ def deplacement(ind_snake) :
 
 
 def add_nourriture():
-    global plateau, nourriture_coord
+    global plateau, nourriture_coord, fps
+    fps+=1
     L_tamp = []
     for x in range(plat_size[0]) :
         for y in range(plat_size[1]) :
@@ -261,10 +263,23 @@ while main_loop:
             if snake[k]["mort"] == False :
                 tamp = deplacement(k)
             if tamp == False :
+<<<<<<< Updated upstream
                 snake[k]["mort"] = True
                 for c in snake[k]["position"] :
                     plateau[c] = "snake_dead"
 
+=======
+                try :
+                    for k in range(nb_case_a_mourir) :
+                        snake[k]["position"].pop(-1)
+                    snake[k]["position"] = retourne(snake[k]["position"])
+                    snake[k]["direction"] = change_direction(snake[k]["position"])
+                except :
+                    snake[k]["mort"] = True
+
+                
+    
+>>>>>>> Stashed changes
         window.blit(bg_in_game, (0,0))
 
 
