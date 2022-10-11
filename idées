@@ -1,0 +1,10 @@
+obstacle à drop (coup de 2 blocs) d'une couleur similaire pour tout les joeuers :   -si l'enemie fonce dessus : il perd 4 blocs 
+                                                    -si l'allier tombe dessus, il récupère un blocs
+
+differents plateau avec des obstacles prédéfinis
+des lasers (obstacle mouvant)
+vitesses des serpent différents
+
+bonnux :1- les cotrols de l'enemie sont inversé 
+        2-invurlérabilité
+        3-

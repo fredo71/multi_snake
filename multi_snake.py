@@ -17,34 +17,46 @@ def resource_path0(relative_path):
         os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
+taille_plat = 30
+
 
 def conv_sizex(x):
-    return int(size_screen[0]*x/(0.83333*taille_screeny))
+    return int(size_screen[0]*x/(here_taille_screeny))
 def conv_sizey(y):
-    return int(size_screen[1]*y/(0.83333*taille_screeny))
+    return int(size_screen[1]*y/(here_taille_screeny))
 taille_screenx, taille_screeny = pyautogui.size()
+here_taille_screeny = (int((0.83333*taille_screeny)/taille_plat)+1)*taille_plat
 
 ##var/lists global
-size_screen = (0.83333*taille_screeny, 0.83333*taille_screeny)
+size_screen = (here_taille_screeny, here_taille_screeny)
 hold_clic = False
-fps = 3
-plat_size = (30,30) #spawn des snake 7, 14, 21, 28
-taille_case = 30 #pixels
+fps = 100
+taille_case = int((0.83333*taille_screeny)/taille_plat)+1 #pixels
+plat_size = (taille_plat,taille_plat) #spawn des snake 7, 14, 21, 28
 nourriture_coord = None
 nb_case_a_mourir = 2
 case_mur = []
+<<<<<<< Updated upstream
 custom_plateau = True
+=======
+taille_depart = 7
+
+vitesse_snake1 = 35
+vitesse_snake2 = 35
+inc_vitess_snake1 = 0
+inc_vitess_snake2 = 0
+>>>>>>> Stashed changes
 
 
 plateau = {}
 for y in range(plat_size[1]) :
     for x in range(plat_size[0]) :
         plateau[(x,y)] = "vide" #"nourriture" = nouriture, "p0" = player 1 rouge, "p1" = player 2 bleu....
-
+print(plateau)
 nb_player = 2
 snake = []
 for k in range(nb_player) :
-    snake.append({"position" : [(20-p, 7*(k+1)) for p in range(7)], "direction" : "right", "mort" : False})
+    snake.append({"position" : [(int(taille_plat/1.5)-p, int(taille_plat/4.29)*(k+1)) for p in range(taille_depart)], "direction" : "right", "mort" : False})
 for k in range(len(snake)) :
     for p in range(len(snake[k]["position"])) :
         plateau[snake[k]["position"][p]] = "p"+str(k)
@@ -84,14 +96,12 @@ font3 = pygame.font.SysFont("comicsansms", int(size_screen[0]/18))
 
 
 
-snake_corps_p1 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p1_corps_snake.png")).convert_alpha(), (conv_sizex(30),conv_sizey(30)))
-snake_corps_p1_mort = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p1_corps_snake_mort.png")).convert_alpha(), (conv_sizex(30),conv_sizex(30)))
-snake_corps_p2 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p2_corps_snake.png")).convert_alpha(), (conv_sizex(30),conv_sizex(30)))
-snake_corps_p2_mort = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p2_corps_snake_mort.png")).convert_alpha(), (conv_sizex(30),conv_sizex(30)))
+snake_corps_p1 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p1_corps_snake.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizey(taille_case)))
+snake_corps_p2 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p2_corps_snake.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizex(taille_case)))
 
-mur_im = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/mur.png")).convert_alpha(), (conv_sizex(30),conv_sizex(30)))
+mur_im = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/mur.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizex(taille_case)))
 
-im_nourriture = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/autre/food.png")).convert_alpha(), (conv_sizex(30),conv_sizex(30)))
+im_nourriture = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/autre/food.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizex(taille_case)))
 
 bg_in_game = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/background/bg_in_game.png")).convert(), size_screen)
 
@@ -113,7 +123,6 @@ bg_in_game = pygame.transform.scale(pygame.image.load(resource_path0("./assets/i
 
 def deplacement(ind_snake) :
     global snake
-    print("dep-", snake[ind_snake]["direction"])
     #test si serpent va mourir
     try :
         depx, depy = 0,0
@@ -125,7 +134,6 @@ def deplacement(ind_snake) :
             depy = -1
         elif snake[ind_snake]["direction"] == "down" :
             depy = 1
-        print(plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)])
         if plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] not in ["vide", "nourriture"] : #si le serpent va mourir
             return False
         elif plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] == "nourriture" : #si le serpent va manger
@@ -185,17 +193,17 @@ def cherche_dirrection (snakee) :
     return direction
 
 #threads
-def anti_hold_clic():
-    global hold_clic
-    while main_loop :
-        if pygame.mouse.get_pressed()[0] :
-            hold_clic = True
-            clock.tick(5)
-            hold_clic = False
-    sys.exit()
-#def threads
-thread_anti_hold_clic = threading.Thread(target=anti_hold_clic)
-thread_anti_hold_clic.start()
+# def anti_hold_clic():
+#     global hold_clic
+#     while main_loop :
+#         if pygame.mouse.get_pressed()[0] :
+#             hold_clic = True
+#             clock.tick(5)
+#             hold_clic = False
+#     sys.exit()
+# #def threads
+# thread_anti_hold_clic = threading.Thread(target=anti_hold_clic)
+# thread_anti_hold_clic.start()
 
 
 def create_custom_plateau(plateau):
@@ -285,7 +293,9 @@ while main_loop:
                     snake[1]["direction"] = "up"
                 elif  event.type == KEYUP and event.key ==  K_l and plateau[(snake[1]["position"][0][0], snake[1]["position"][0][1]+1)] == "vide":
                     snake[1]["direction"] = "down"
-
+            if  event.type == KEYUP and event.key ==  K_v and vitesse_snake1 > 1:
+                vitesse_snake1-=1
+                inc_vitess_snake1 = 0
 
 
 
@@ -295,18 +305,36 @@ while main_loop:
 
 
         for k in range(len(snake)) :
-            if snake[k]["mort"] == False :
-                tamp = deplacement(k)
-            if tamp == False :
-                try :
-                    for p in range(nb_case_a_mourir) :
-                        plateau[snake[k]["position"][0]] = "mur"
-                        case_mur.append(snake[k]["position"][0])
-                        snake[k]["position"].pop(0)
-                    snake[k]["position"] = retourne(snake[k]["position"])
-                    snake[k]["direction"] = cherche_dirrection(snake[k]["position"])
-                except :
-                    snake[k]["mort"] = True
+            if k == 0 :
+                if inc_vitess_snake1 == vitesse_snake1 :
+                    p = "pass"
+                    inc_vitess_snake1 = 0
+                else :
+                    inc_vitess_snake1+=1
+                    p = "pass_pas"
+            elif k == 1 :
+                if inc_vitess_snake2 == vitesse_snake2 :
+                    p = "pass"
+                    inc_vitess_snake2 = 0
+                else :
+                    inc_vitess_snake2+=1
+                    p = "pass_pas"
+            else :
+                p = "pass_pas"
+
+            if p == "pass" :
+                if snake[k]["mort"] == False :
+                    tamp = deplacement(k)
+                if tamp == False :
+                    try :
+                        for p in range(nb_case_a_mourir) :
+                            plateau[snake[k]["position"][0]] = "mur"
+                            case_mur.append(snake[k]["position"][0])
+                            snake[k]["position"].pop(0)
+                        snake[k]["position"] = retourne(snake[k]["position"])
+                        snake[k]["direction"] = cherche_dirrection(snake[k]["position"])
+                    except :
+                        snake[k]["mort"] = True
 
 
 
@@ -319,9 +347,9 @@ while main_loop:
             for p in range(len(snake[k]["position"])) :
                 if snake[k]["mort"] :
                     if k == 0 :
-                        window.blit(snake_corps_p1_mort, (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                        window.blit(mur_im, (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                     elif k == 1 :
-                        window.blit(snake_corps_p2_mort, (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                        window.blit(mur_im, (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                 else :
                     if k == 0 :
                         window.blit(snake_corps_p1, (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
