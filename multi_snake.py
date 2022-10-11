@@ -1,4 +1,4 @@
-from random import choice
+from random import choice,randint
 from pygame.locals import *
 import threading
 import pygame
@@ -33,6 +33,7 @@ taille_case = 30 #pixels
 nourriture_coord = None
 nb_case_a_mourir = 2
 case_mur = []
+custom_plateau = True
 
 
 plateau = {}
@@ -47,7 +48,6 @@ for k in range(nb_player) :
 for k in range(len(snake)) :
     for p in range(len(snake[k]["position"])) :
         plateau[snake[k]["position"][p]] = "p"+str(k)
-
 
 #######def var boolean boucles in game
 main_loop = True #boucle de la fenêtre de jeu
@@ -198,6 +198,38 @@ thread_anti_hold_clic = threading.Thread(target=anti_hold_clic)
 thread_anti_hold_clic.start()
 
 
+def create_custom_plateau(plateau):
+    shape_list = [[(0,0),(-1,0),(1,0)],[(0,0),(-1,0),(0,1)],[(0,0),(0,-1),(0,1)],[(0,0),(0,-1),(1,0)]]
+    shape_num = [2,2,2,2]
+    for m in range (len(shape_list)):
+        shape=shape_list[m]
+        for k in range (shape_num[m]):
+            x=randint(0,plat_size[0])
+            y=randint(0,plat_size[0])
+            st = add_shape(shape,(x,y),plateau)
+            if not st :
+                k=k-1
+
+
+
+
+
+def add_shape(shape,coord,plateau):
+    global snake
+    for k in range (0,len(shape)):
+        pt=(coord[0]+shape[k][0],coord[1]+shape[k][1])
+        for i in range (0,len(snake)):
+            if pt in snake[i]:
+                return False
+
+
+
+    for k in range (0,len(shape)):
+        pt=(coord[0]+shape[k][0],coord[1]+shape[k][1])
+        plateau[pt]='mur'
+        case_mur.append(pt)
+
+    return True
 
 
 
@@ -209,7 +241,9 @@ thread_anti_hold_clic.start()
 
 
 
+if(custom_plateau):
 
+    create_custom_plateau(plateau)
 
 
 
@@ -274,8 +308,8 @@ while main_loop:
                 except :
                     snake[k]["mort"] = True
 
-                
-    
+
+
         window.blit(bg_in_game, (0,0))
         for p in range(len(case_mur)) :
             window.blit(mur_im, (case_mur[p][0]*taille_case, case_mur[p][1]*taille_case, case_mur[p][0]*taille_case+taille_case, case_mur[p][1]*taille_case+taille_case))
