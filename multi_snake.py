@@ -36,16 +36,13 @@ plat_size = (taille_plat,taille_plat) #spawn des snake 7, 14, 21, 28
 nourriture_coord = None
 nb_case_a_mourir = 2
 case_mur = []
-<<<<<<< Updated upstream
 custom_plateau = True
-=======
 taille_depart = 7
 
 vitesse_snake1 = 35
 vitesse_snake2 = 35
 inc_vitess_snake1 = 0
 inc_vitess_snake2 = 0
->>>>>>> Stashed changes
 
 
 plateau = {}
