@@ -87,7 +87,8 @@ font3 = pygame.font.SysFont("comicsansms", int(size_screen[0]/18))
 
 
 
-
+icon = pygame.image.load(resource_path0("./assets/images/icon.png"))
+pygame.display.set_icon(icon)
 snake_tete_p1 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p1_tete_snake.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizey(taille_case)))
 L_snake_tete_p1 = [snake_tete_p1, pygame.transform.rotate(snake_tete_p1, 90), pygame.transform.rotate(snake_tete_p1, 180), pygame.transform.rotate(snake_tete_p1, 270)] #droite, haut, gauche, bas
 snake_queue_p1 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p1_queue_snake.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizey(taille_case)))
