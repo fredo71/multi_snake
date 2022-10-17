@@ -37,6 +37,8 @@ nb_case_a_mourir = 2
 case_mur = []
 custom_plateau = True   
 taille_depart = 7
+bloc_bonnus = []
+
 
 vitesse_snake1 = 35
 vitesse_snake2 = 35
@@ -164,7 +166,7 @@ def deplacement(ind_snake) :
             snake[ind_snake]["position"].insert(0, (snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy))
             plateau[snake[ind_snake]["position"][0]] = "p"+str(ind_snake)
             nourriture.pop([nourriture[k][1] for k in range(len(nourriture))].index((snake[ind_snake]["position"][0][0], snake[ind_snake]["position"][0][1])))
-            add_nourriture()
+            add_nourriture(True)
         elif plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] == "portal" :
             for k in range(2) :
                 tamp = snake[ind_snake]["position"][0]
@@ -201,12 +203,13 @@ def deplacement(ind_snake) :
 
 
 
-def add_nourriture():
+def add_nourriture(add_vitesse):
     global plateau, vitesse_snake1, vitesse_snake2, nourriture, inc_vitess_snake1, inc_vitess_snake2
-    vitesse_snake1-=2
-    vitesse_snake2-=2
-    inc_vitess_snake1 = 0
-    inc_vitess_snake2 = 0
+    if add_vitesse :
+        vitesse_snake1-=1
+        vitesse_snake2-=1
+        inc_vitess_snake1 = 0
+        inc_vitess_snake2 = 0
     L_tamp = []
     for x in range(plat_size[0]) :
         for y in range(plat_size[1]) :
@@ -524,7 +527,7 @@ while main_loop:
     if bataille_loop :
         if(custom_plateau):
             create_custom_plateau(plateau)
-        add_nourriture()()()
+        add_nourriture(False)(False)(False)
         ajout_portal()
     while bataille_loop : #boucle du menu      ########\\\\\\\\\\\\\rajouter de la nourriture si elle est mangée
 
