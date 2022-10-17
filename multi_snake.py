@@ -42,10 +42,14 @@ bloc_bonnus = []
 commande = [[K_q,K_d,K_z,K_s],[K_k,K_m,K_o,K_l]]
 
 bloc_bonus = []
-name_bonus = ["invulnérable"] #"add_nourriture", "invers_controle", 
+name_bonus = ["invers_controle"] #"add_nourriture", "invulnérable", 
 invulnerable_time = 500
 inc_invulnerable1 = 0
 inc_invulnerable2 = 0
+
+desoriente_time = 500
+inc_desoriente1 = 0
+inc_desoriente2 = 0
 
 vitesse_snake1 = 35
 vitesse_snake2 = 35
@@ -60,7 +64,7 @@ for y in range(plat_size[1]) :
 nb_player = 2
 snake = []
 for k in range(nb_player) :
-    snake.append({"position" : [(int(taille_plat/1.5)-p, int(taille_plat/4.29)*(k+1)) for p in range(taille_depart)], "direction" : "right", "mort" : False, "invulnerable" : False})
+    snake.append({"position" : [(int(taille_plat/1.5)-p, int(taille_plat/4.29)*(k+1)) for p in range(taille_depart)], "direction" : "right", "mort" : False, "invulnerable" : False, "inverser" : False})
 for k in range(len(snake)) :
     for p in range(len(snake[k]["position"])) :
         plateau[snake[k]["position"][p]] = "p"+str(k)
@@ -120,6 +124,9 @@ L_snake_corner_p2 = [snake_corner_p2, pygame.transform.rotate(snake_corner_p2, 9
 im_bonus = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/autre/bonus.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizex(taille_case)))
 tete_invulnerable = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/tete_invulnerable.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizey(taille_case)))
 L_tete_invulnerable = [tete_invulnerable, pygame.transform.rotate(tete_invulnerable, 90), pygame.transform.rotate(tete_invulnerable, 180), pygame.transform.rotate(tete_invulnerable, 270)]
+
+tete_deshorienter = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/tete_deshorienter.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizey(taille_case)))
+L_tete_deshorienter = [tete_deshorienter, pygame.transform.rotate(tete_deshorienter, 90), pygame.transform.rotate(tete_deshorienter, 180), pygame.transform.rotate(tete_deshorienter, 270)]
 
 
 mur_im = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/mur.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizex(taille_case)))
@@ -209,8 +216,10 @@ def deplacement(ind_snake) :
             elif bloc_bonus[0][2] == "invers_controle":
                 if ind_snake ==1:
                     inverse(0)
+                    snake[0]["inverser"] = True
                 else:
                     inverse(1)
+                    snake[1]["inverser"] = True
             elif bloc_bonus[0][2] == "invulnérable":
                 snake[ind_snake]["invulnerable"] = True
                 if ind_snake == 0 :
@@ -427,7 +436,7 @@ while main_loop:
                 plateau[(x,y)] = "vide" #"nourriture" = nouriture, "p0" = player 1 rouge, "p1" = player 2 bleu....
         snake = []
         for k in range(nb_player) :
-            snake.append({"position" : [(int(taille_plat/1.5)-p, int(taille_plat/4.29)*(k+1)) for p in range(taille_depart)], "direction" : "right", "mort" : False, "invulnerable" : False})
+            snake.append({"position" : [(int(taille_plat/1.5)-p, int(taille_plat/4.29)*(k+1)) for p in range(taille_depart)], "direction" : "right", "mort" : False, "invulnerable" : False, "inverser" : False})
         for k in range(len(snake)) :
             for p in range(len(snake[k]["position"])) :
                 plateau[snake[k]["position"][p]] = "p"+str(k)
@@ -702,6 +711,20 @@ while main_loop:
                 else :
                     inc_invulnerable2+=1
 
+            if snake[k]["inverser"] and k == 0 :
+                if inc_desoriente1 >= desoriente_time :
+                    snake[k]["inverser"] = False
+                    
+                    inverse(0)
+                else :
+                    inc_desoriente1+=1
+            if snake[k]["inverser"] and k == 1 :
+                if inc_desoriente2 >= desoriente_time :
+                    snake[k]["inverser"] = False
+                    inverse(1)
+                else :
+                    inc_desoriente2+=1
+
         if inc_time_portal_apaire == time_portal_apaire or len(L_portal) == 0:
             ajout_portal()
         else :
@@ -744,21 +767,29 @@ while main_loop:
                             if direct == "right" :
                                 if snake[k]["invulnerable"] :
                                     window.blit(L_tete_invulnerable[0], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                elif snake[k]["inverser"] :
+                                    window.blit(L_tete_deshorienter[0], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                                 else :
                                     window.blit(L_snake_tete_p1[0], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                             elif direct == "up" :
                                 if snake[k]["invulnerable"] :
                                     window.blit(L_tete_invulnerable[1], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                elif snake[k]["inverser"] :
+                                    window.blit(L_tete_deshorienter[1], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                                 else :
                                     window.blit(L_snake_tete_p1[1], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                             elif direct == "left" :
                                 if snake[k]["invulnerable"] :
                                     window.blit(L_tete_invulnerable[2], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                elif snake[k]["inverser"] :
+                                    window.blit(L_tete_deshorienter[2], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                                 else :
                                     window.blit(L_snake_tete_p1[2], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                             elif direct == "down" :
                                 if snake[k]["invulnerable"] :
                                     window.blit(L_tete_invulnerable[3], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                elif snake[k]["inverser"] :
+                                    window.blit(L_tete_deshorienter[3], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                                 else :
                                     window.blit(L_snake_tete_p1[3], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                         elif p == len(snake[k]["position"])-1 :
@@ -822,21 +853,29 @@ while main_loop:
                             if direct == "right" :
                                 if snake[k]["invulnerable"] :
                                     window.blit(L_tete_invulnerable[0], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                elif snake[k]["inverser"] :
+                                    window.blit(L_tete_deshorienter[0], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                                 else :
                                     window.blit(L_snake_tete_p2[0], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                             elif direct == "up" :
                                 if snake[k]["invulnerable"] :
                                     window.blit(L_tete_invulnerable[1], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                elif snake[k]["inverser"] :
+                                    window.blit(L_tete_deshorienter[1], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                                 else :
                                     window.blit(L_snake_tete_p2[1], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                             elif direct == "left" :
                                 if snake[k]["invulnerable"] :
                                     window.blit(L_tete_invulnerable[2], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                elif snake[k]["inverser"] :
+                                    window.blit(L_tete_deshorienter[2], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                                 else :
                                     window.blit(L_snake_tete_p2[2], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                             elif direct == "down" :
                                 if snake[k]["invulnerable"] :
                                     window.blit(L_tete_invulnerable[3], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                elif snake[k]["inverser"] :
+                                    window.blit(L_tete_deshorienter[3], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                                 else :
                                     window.blit(L_snake_tete_p2[3], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                         elif p == len(snake[k]["position"])-1 :
