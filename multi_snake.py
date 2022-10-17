@@ -39,7 +39,7 @@ custom_plateau = True
 taille_depart = 7
 
 bloc_bonnus = []
-comande = [[K_q,K_d,K_z,K_s],[]]
+commande = [[K_q,K_d,K_z,K_s],[K_k,K_m,K_o,K_l]]
 
 bloc_bonus = []
 name_bonus = ["add_nourriture", "invers_controle", "invulnérable"]
@@ -189,7 +189,10 @@ def deplacement(ind_snake) :
             if bloc_bonus[0][2] == "add_nourriture":
                 bonus_food((snake[ind_snake]["position"][0][0], snake[ind_snake]["position"][0][1]))
             elif bloc_bonus[0][2] == "invers_controle":
-                pass
+                if ind_snake ==1:
+                    inverse(0)
+                else:
+                    inverse(1)
             elif bloc_bonus[0][2] == "invulnérable":
                 snake[ind_snake]["invulnerable"] = True
                 if ind_snake == 0 :
@@ -378,9 +381,13 @@ def bonus_food(coordone):
             if plateau[tamp] == "vide" :
                 plateau[tamp] = "nourriture"
                 nourriture.append([choice(im_nourriture_bdd), tamp])
+        else:
+            k-=1
 
-
-
+def inverse (int_snake):
+    global commande
+    commande[int_snake][0] ,commande[int_snake][1] = commande[int_snake][1] , commande[int_snake][0]
+    commande[int_snake][2] ,commande[int_snake][3] = commande[int_snake][3] , commande[int_snake][2]
 
 
 
@@ -596,24 +603,24 @@ while main_loop:
                 bataille_loop = False
             try :
                 if nb_player >= 1 and snake[0]["mort"] == False :
-                    if  event.type == KEYUP and event.key ==  K_q and plateau[(snake[0]["position"][0][0]-1, snake[0]["position"][0][1])] in ["vide", "nourriture", "portal", "bonus"]: #ajouter les limites
+                    if  event.type == KEYUP and event.key ==  commande[0][0] and plateau[(snake[0]["position"][0][0]-1, snake[0]["position"][0][1])] in ["vide", "nourriture", "portal", "bonus"]: #ajouter les limites
                         snake[0]["direction"] = "left"
-                    elif  event.type == KEYUP and event.key ==  K_d and plateau[(snake[0]["position"][0][0]+1, snake[0]["position"][0][1])] in ["vide", "nourriture", "portal", "bonus"]:
+                    elif  event.type == KEYUP and event.key ==  commande[0][1] and plateau[(snake[0]["position"][0][0]+1, snake[0]["position"][0][1])] in ["vide", "nourriture", "portal", "bonus"]:
                         snake[0]["direction"] = "right"
-                    elif  event.type == KEYUP and event.key ==  K_z and plateau[(snake[0]["position"][0][0], snake[0]["position"][0][1]-1)] in ["vide", "nourriture", "portal", "bonus"]:
+                    elif  event.type == KEYUP and event.key ==  commande[0][2] and plateau[(snake[0]["position"][0][0], snake[0]["position"][0][1]-1)] in ["vide", "nourriture", "portal", "bonus"]:
                         snake[0]["direction"] = "up"
-                    elif  event.type == KEYUP and event.key ==  K_s and plateau[(snake[0]["position"][0][0], snake[0]["position"][0][1]+1)] in ["vide", "nourriture", "portal", "bonus"]:
+                    elif  event.type == KEYUP and event.key ==  commande[0][3] and plateau[(snake[0]["position"][0][0], snake[0]["position"][0][1]+1)] in ["vide", "nourriture", "portal", "bonus"]:
                         snake[0]["direction"] = "down"
 
     #joueur deux
                 if nb_player >= 2 and snake[1]["mort"] == False :
-                    if  event.type == KEYUP and event.key ==  K_k and plateau[(snake[1]["position"][0][0]-1, snake[1]["position"][0][1])] in ["vide", "nourriture", "portal", "bonus"]: #ajouter les limites
+                    if  event.type == KEYUP and event.key ==  commande[1][0] and plateau[(snake[1]["position"][0][0]-1, snake[1]["position"][0][1])] in ["vide", "nourriture", "portal", "bonus"]: #ajouter les limites
                         snake[1]["direction"] = "left"
-                    elif  event.type == KEYUP and event.key ==  K_m and plateau[(snake[1]["position"][0][0]+1, snake[1]["position"][0][1])] in ["vide", "nourriture", "portal", "bonus"]:
+                    elif  event.type == KEYUP and event.key ==  commande[1][1] and plateau[(snake[1]["position"][0][0]+1, snake[1]["position"][0][1])] in ["vide", "nourriture", "portal", "bonus"]:
                         snake[1]["direction"] = "right"
-                    elif  event.type == KEYUP and event.key ==  K_o and plateau[(snake[1]["position"][0][0], snake[1]["position"][0][1]-1)] in ["vide", "nourriture", "portal", "bonus"]:
+                    elif  event.type == KEYUP and event.key ==  commande[1][2] and plateau[(snake[1]["position"][0][0], snake[1]["position"][0][1]-1)] in ["vide", "nourriture", "portal", "bonus"]:
                         snake[1]["direction"] = "up"
-                    elif  event.type == KEYUP and event.key ==  K_l and plateau[(snake[1]["position"][0][0], snake[1]["position"][0][1]+1)] in ["vide", "nourriture", "portal", "bonus"]:
+                    elif  event.type == KEYUP and event.key ==  commande[1][3] and plateau[(snake[1]["position"][0][0], snake[1]["position"][0][1]+1)] in ["vide", "nourriture", "portal", "bonus"]:
                         snake[1]["direction"] = "down"
                 if  event.type == KEYUP and event.key ==  K_v and vitesse_snake1 > 1:
                     vitesse_snake1-=1
