@@ -118,7 +118,7 @@ snake_corner_p2 = pygame.transform.scale(pygame.image.load(resource_path0("./ass
 L_snake_corner_p2 = [snake_corner_p2, pygame.transform.rotate(snake_corner_p2, 90), pygame.transform.rotate(snake_corner_p2, 180), pygame.transform.rotate(snake_corner_p2, 270)] #droite, haut, gauche, bas
 
 im_bonus = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/autre/bonus.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizex(taille_case)))
-
+tete_invulnerable = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/tete_invulnerable.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizey(taille_case)))
 
 
 
@@ -187,7 +187,7 @@ def deplacement(ind_snake) :
                 plateau[snake[ind_snake]["position"][p]] = "p"+str(ind_snake)
             plateau[tamp2] = "vide"
             if bloc_bonus[0][2] == "add_nourriture":
-                pass
+                bonus_food((snake[ind_snake]["position"][0][0], snake[ind_snake]["position"][0][1]))
             elif bloc_bonus[0][2] == "invers_controle":
                 pass
             elif bloc_bonus[0][2] == "invulnérable":
@@ -196,8 +196,8 @@ def deplacement(ind_snake) :
                     inc_invulnerable1 = 0
                 if ind_snake == 1 :
                     inc_invulnerable2 = 0
-                bloc_bonus = []
-                add_bonus()
+            bloc_bonus = []
+            add_bonus()
         elif plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] == "portal" :
             for k in range(2) :
                 tamp = snake[ind_snake]["position"][0]
@@ -373,7 +373,7 @@ def add_bonus():
 def bonus_food(coordone):
     global plateau ,nourriture ,taille_plat
     for k in range(10):
-        tamp  = (coordone[0] + randint(0,10), coordone[1] +randint(0,10))
+        tamp  = (coordone[0] + randint(-5,5), coordone[1] +randint(-5,5))
         if 0<tamp[0]<taille_plat and 0<tamp[1]<taille_plat :
             if plateau[tamp] == "vide" :
                 plateau[tamp] = "nourriture"
@@ -591,32 +591,29 @@ while main_loop:
         #events clavier
         keys = pygame.key.get_pressed()
         for event in pygame.event.get():   #On parcours la liste de tous les événements reçus
-            if event.type == KEYUP and event.key ==  K_a: #temp
-                print("yeeepee")
-                bonus_food(snake[0]["position"][0])
             if event.type == QUIT or keys[K_LSHIFT] and keys[K_ESCAPE] :     #Si un de ces événements est de type QUIT
                 main_loop = False
                 bataille_loop = False
             try :
                 if nb_player >= 1 and snake[0]["mort"] == False :
-                    if  event.type == KEYUP and event.key ==  K_q and plateau[(snake[0]["position"][0][0]-1, snake[0]["position"][0][1])] == "vide": #ajouter les limites
+                    if  event.type == KEYUP and event.key ==  K_q and plateau[(snake[0]["position"][0][0]-1, snake[0]["position"][0][1])] in ["vide", "nourriture", "portal", "bonus"]: #ajouter les limites
                         snake[0]["direction"] = "left"
-                    elif  event.type == KEYUP and event.key ==  K_d and plateau[(snake[0]["position"][0][0]+1, snake[0]["position"][0][1])] == "vide":
+                    elif  event.type == KEYUP and event.key ==  K_d and plateau[(snake[0]["position"][0][0]+1, snake[0]["position"][0][1])] in ["vide", "nourriture", "portal", "bonus"]:
                         snake[0]["direction"] = "right"
-                    elif  event.type == KEYUP and event.key ==  K_z and plateau[(snake[0]["position"][0][0], snake[0]["position"][0][1]-1)] == "vide":
+                    elif  event.type == KEYUP and event.key ==  K_z and plateau[(snake[0]["position"][0][0], snake[0]["position"][0][1]-1)] in ["vide", "nourriture", "portal", "bonus"]:
                         snake[0]["direction"] = "up"
-                    elif  event.type == KEYUP and event.key ==  K_s and plateau[(snake[0]["position"][0][0], snake[0]["position"][0][1]+1)] == "vide":
+                    elif  event.type == KEYUP and event.key ==  K_s and plateau[(snake[0]["position"][0][0], snake[0]["position"][0][1]+1)] in ["vide", "nourriture", "portal", "bonus"]:
                         snake[0]["direction"] = "down"
 
     #joueur deux
                 if nb_player >= 2 and snake[1]["mort"] == False :
-                    if  event.type == KEYUP and event.key ==  K_k and plateau[(snake[1]["position"][0][0]-1, snake[1]["position"][0][1])] == "vide": #ajouter les limites
+                    if  event.type == KEYUP and event.key ==  K_k and plateau[(snake[1]["position"][0][0]-1, snake[1]["position"][0][1])] in ["vide", "nourriture", "portal", "bonus"]: #ajouter les limites
                         snake[1]["direction"] = "left"
-                    elif  event.type == KEYUP and event.key ==  K_m and plateau[(snake[1]["position"][0][0]+1, snake[1]["position"][0][1])] == "vide":
+                    elif  event.type == KEYUP and event.key ==  K_m and plateau[(snake[1]["position"][0][0]+1, snake[1]["position"][0][1])] in ["vide", "nourriture", "portal", "bonus"]:
                         snake[1]["direction"] = "right"
-                    elif  event.type == KEYUP and event.key ==  K_o and plateau[(snake[1]["position"][0][0], snake[1]["position"][0][1]-1)] == "vide":
+                    elif  event.type == KEYUP and event.key ==  K_o and plateau[(snake[1]["position"][0][0], snake[1]["position"][0][1]-1)] in ["vide", "nourriture", "portal", "bonus"]:
                         snake[1]["direction"] = "up"
-                    elif  event.type == KEYUP and event.key ==  K_l and plateau[(snake[1]["position"][0][0], snake[1]["position"][0][1]+1)] == "vide":
+                    elif  event.type == KEYUP and event.key ==  K_l and plateau[(snake[1]["position"][0][0], snake[1]["position"][0][1]+1)] in ["vide", "nourriture", "portal", "bonus"]:
                         snake[1]["direction"] = "down"
                 if  event.type == KEYUP and event.key ==  K_v and vitesse_snake1 > 1:
                     vitesse_snake1-=1
