@@ -42,7 +42,7 @@ bloc_bonnus = []
 commande = [[K_q,K_d,K_z,K_s],[K_k,K_m,K_o,K_l]]
 
 bloc_bonus = []
-name_bonus = ["add_nourriture", "invers_controle", "invulnérable"]
+name_bonus = ["invulnérable"] #"add_nourriture", "invers_controle", 
 invulnerable_time = 500
 inc_invulnerable1 = 0
 inc_invulnerable2 = 0
@@ -119,7 +119,7 @@ L_snake_corner_p2 = [snake_corner_p2, pygame.transform.rotate(snake_corner_p2, 9
 
 im_bonus = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/autre/bonus.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizex(taille_case)))
 tete_invulnerable = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/tete_invulnerable.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizey(taille_case)))
-
+L_tete_invulnerable = [tete_invulnerable, pygame.transform.rotate(tete_invulnerable, 90), pygame.transform.rotate(tete_invulnerable, 180), pygame.transform.rotate(tete_invulnerable, 270)]
 
 
 mur_im = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/mur.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizex(taille_case)))
@@ -156,7 +156,7 @@ bg_in_game = pygame.transform.scale(pygame.image.load(resource_path0("./assets/i
 
 
 def deplacement(ind_snake) :
-    global snake, L_portal, bloc_bonus, inc_invulnerable1, inc_invulnerable2
+    global snake, L_portal, bloc_bonus, inc_invulnerable1, inc_invulnerable2, plateau, case_mur
     #test si serpent va mourir
     try :
         depx, depy = 0,0
@@ -168,6 +168,24 @@ def deplacement(ind_snake) :
             depy = -1
         elif snake[ind_snake]["direction"] == "down" :
             depy = 1
+        if snake[ind_snake]["invulnerable"] :
+            print("jere", plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)])
+            if ind_snake == 0 and "p1" in plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)]:
+                for p in range(nb_case_a_mourir) :
+                    plateau[snake[1]["position"][0]] = "mur"
+                    case_mur.append(snake[1]["position"][0])
+                    snake[1]["position"].pop(0)
+                snake[1]["position"] = retourne(snake[1]["position"])
+                snake[1]["direction"] = cherche_dirrection(snake[1]["position"])
+
+            elif ind_snake == 1 and "p0" in plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)]:
+                for p in range(nb_case_a_mourir) :
+                    plateau[snake[0]["position"][0]] = "mur"
+                    case_mur.append(snake[0]["position"][0])
+                    snake[0]["position"].pop(0)
+                snake[0]["position"] = retourne(snake[0]["position"])
+                snake[0]["direction"] = cherche_dirrection(snake[0]["position"])
+
         if plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] not in ["vide", "nourriture", "portal", "bonus"] : #si le serpent va mourir
             return False
         elif plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] == "nourriture" : #si le serpent va manger
@@ -375,7 +393,7 @@ def add_bonus():
 
 def bonus_food(coordone):
     global plateau ,nourriture ,taille_plat
-    for k in range(10):
+    for k in range(5):
         tamp  = (coordone[0] + randint(-5,5), coordone[1] +randint(-5,5))
         if 0<tamp[0]<taille_plat and 0<tamp[1]<taille_plat :
             if plateau[tamp] == "vide" :
@@ -670,6 +688,8 @@ while main_loop:
                         snake[k]["direction"] = cherche_dirrection(snake[k]["position"])
                     except :
                         snake[k]["mort"] = True
+            if len(snake[k]["position"]) <= 1 :
+                snake[k]["mort"] = True
 
             if snake[k]["invulnerable"] and k == 0 :
                 if inc_invulnerable1 >= invulnerable_time :
@@ -722,13 +742,25 @@ while main_loop:
                             else:
                                 direct = "down"
                             if direct == "right" :
-                                window.blit(L_snake_tete_p1[0], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                if snake[k]["invulnerable"] :
+                                    window.blit(L_tete_invulnerable[0], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                else :
+                                    window.blit(L_snake_tete_p1[0], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                             elif direct == "up" :
-                                window.blit(L_snake_tete_p1[1], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                if snake[k]["invulnerable"] :
+                                    window.blit(L_tete_invulnerable[1], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                else :
+                                    window.blit(L_snake_tete_p1[1], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                             elif direct == "left" :
-                                window.blit(L_snake_tete_p1[2], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                if snake[k]["invulnerable"] :
+                                    window.blit(L_tete_invulnerable[2], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                else :
+                                    window.blit(L_snake_tete_p1[2], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                             elif direct == "down" :
-                                window.blit(L_snake_tete_p1[3], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                if snake[k]["invulnerable"] :
+                                    window.blit(L_tete_invulnerable[3], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                else :
+                                    window.blit(L_snake_tete_p1[3], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                         elif p == len(snake[k]["position"])-1 :
                             cube1_x =snake[k]["position"][-1][0]
                             cube2_x =snake[k]["position"][-2][0]
@@ -788,13 +820,25 @@ while main_loop:
                             else:
                                 direct = "down"
                             if direct == "right" :
-                                window.blit(L_snake_tete_p2[0], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                if snake[k]["invulnerable"] :
+                                    window.blit(L_tete_invulnerable[0], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                else :
+                                    window.blit(L_snake_tete_p2[0], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                             elif direct == "up" :
-                                window.blit(L_snake_tete_p2[1], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                if snake[k]["invulnerable"] :
+                                    window.blit(L_tete_invulnerable[1], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                else :
+                                    window.blit(L_snake_tete_p2[1], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                             elif direct == "left" :
-                                window.blit(L_snake_tete_p2[2], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                if snake[k]["invulnerable"] :
+                                    window.blit(L_tete_invulnerable[2], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                else :
+                                    window.blit(L_snake_tete_p2[2], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                             elif direct == "down" :
-                                window.blit(L_snake_tete_p2[3], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                if snake[k]["invulnerable"] :
+                                    window.blit(L_tete_invulnerable[3], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
+                                else :
+                                    window.blit(L_snake_tete_p2[3], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                         elif p == len(snake[k]["position"])-1 :
                             cube1_x =snake[k]["position"][-1][0]
                             cube2_x =snake[k]["position"][-2][0]
