@@ -35,14 +35,17 @@ taille_case = int((0.83333*taille_screeny)/taille_plat)+1 #pixels
 plat_size = (taille_plat,taille_plat) #spawn des snake 7, 14, 21, 28
 nb_case_a_mourir = 2
 case_mur = []
-custom_plateau = True   
+custom_plateau = True
 taille_depart = 7
+
+bloc_bonnus = []
+comande = [[K_q,K_d,K_z,K_s],[]]
+
 bloc_bonus = []
 name_bonus = ["add_nourriture", "invers_controle", "invulnérable"]
 invulnerable_time = 500
 inc_invulnerable1 = 0
 inc_invulnerable2 = 0
-
 
 vitesse_snake1 = 35
 vitesse_snake2 = 35
@@ -127,7 +130,7 @@ L_portal = []
 time_portal_apaire = 2000
 inc_time_portal_apaire = 0
 
-im_nourriture_listes = ["humberger", "pizza", "gigot", "riz"] 
+im_nourriture_listes = ["humberger", "pizza", "gigot", "riz"]
 im_nourriture_bdd = []
 for foods in im_nourriture_listes :
     im_nourriture_bdd.append(pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/autre/foods/"+foods+".png")).convert_alpha(), (conv_sizex(taille_case),conv_sizex(taille_case))))
@@ -171,6 +174,7 @@ def deplacement(ind_snake) :
             snake[ind_snake]["position"].insert(0, (snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy))
             plateau[snake[ind_snake]["position"][0]] = "p"+str(ind_snake)
             nourriture.pop([nourriture[k][1] for k in range(len(nourriture))].index((snake[ind_snake]["position"][0][0], snake[ind_snake]["position"][0][1])))
+
             add_nourriture(True)
         elif plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] == "bonus" : #si le serpent va manger
             tamp = snake[ind_snake]["position"][0]
@@ -213,7 +217,7 @@ def deplacement(ind_snake) :
             for p in range(len(snake[ind_snake]["position"])) :
                 plateau[snake[ind_snake]["position"][p]] = "p"+str(ind_snake)
             L_portal = []
-            
+
         else : #si le serpent se déplace simplement
             tamp = snake[ind_snake]["position"][0]
             tamp2 = snake[ind_snake]["position"][len(snake[ind_snake]["position"])-1]
@@ -245,9 +249,10 @@ def add_nourriture(add_vitesse):
     if len(L_tamp) == 0 :
         print("jeu fini ou c'est cassé")
     else :
-        tamp = choice(L_tamp)
-        plateau[tamp] = "nourriture"
-        nourriture.append([choice(im_nourriture_bdd), tamp])
+        if len(nourriture)<3:
+            tamp = choice(L_tamp)
+            plateau[tamp] = "nourriture"
+            nourriture.append([choice(im_nourriture_bdd), tamp])
     return add_nourriture
 
 def retourne (snakee):
@@ -346,7 +351,6 @@ def ajout_portal() :
             else :
                 im_portal = im_portal2
             L_portal.append([im_portal, tamp])
-    
 
 def add_bonus():
     global plateau, bloc_bonus
@@ -366,7 +370,14 @@ def add_bonus():
 
 
 
-
+def bonus_food(coordone):
+    global plateau ,nourriture ,taille_plat
+    for k in range(10):
+        tamp  = (coordone[0] + randint(0,10), coordone[1] +randint(0,10))
+        if 0<tamp[0]<taille_plat and 0<tamp[1]<taille_plat :
+            if plateau[tamp] == "vide" :
+                plateau[tamp] = "nourriture"
+                nourriture.append([choice(im_nourriture_bdd), tamp])
 
 
 
@@ -475,7 +486,7 @@ while main_loop:
                             avant_y =snake[k]["position"][p-1][1]
                             apres_y =snake[k]["position"][p+1][1]
 
-                            if self_y == apres_y == avant_y : 
+                            if self_y == apres_y == avant_y :
                                 window.blit(L_snake_corps_p1[0], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                             elif self_x == apres_x == avant_x :
                                 window.blit(L_snake_corps_p1[1], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
@@ -541,7 +552,7 @@ while main_loop:
                             avant_y =snake[k]["position"][p-1][1]
                             apres_y =snake[k]["position"][p+1][1]
 
-                            if self_y == apres_y == avant_y : 
+                            if self_y == apres_y == avant_y :
                                 window.blit(L_snake_corps_p2[0], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                             elif self_x == apres_x == avant_x :
                                 window.blit(L_snake_corps_p2[1], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
@@ -580,6 +591,9 @@ while main_loop:
         #events clavier
         keys = pygame.key.get_pressed()
         for event in pygame.event.get():   #On parcours la liste de tous les événements reçus
+            if event.type == KEYUP and event.key ==  K_a: #temp
+                print("yeeepee")
+                bonus_food(snake[0]["position"][0])
             if event.type == QUIT or keys[K_LSHIFT] and keys[K_ESCAPE] :     #Si un de ces événements est de type QUIT
                 main_loop = False
                 bataille_loop = False
@@ -640,7 +654,7 @@ while main_loop:
                     tamp = deplacement(k)
                 if tamp == False :
                     try :
-                        if snake[k]["invulnerable"] : 
+                        if snake[k]["invulnerable"] :
                             case_to_morir = 0
                         else :
                             case_to_morir = nb_case_a_mourir
@@ -740,7 +754,7 @@ while main_loop:
                             avant_y =snake[k]["position"][p-1][1]
                             apres_y =snake[k]["position"][p+1][1]
 
-                            if self_y == apres_y == avant_y : 
+                            if self_y == apres_y == avant_y :
                                 window.blit(L_snake_corps_p1[0], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                             elif self_x == apres_x == avant_x :
                                 window.blit(L_snake_corps_p1[1], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
@@ -806,7 +820,7 @@ while main_loop:
                             avant_y =snake[k]["position"][p-1][1]
                             apres_y =snake[k]["position"][p+1][1]
 
-                            if self_y == apres_y == avant_y : 
+                            if self_y == apres_y == avant_y :
                                 window.blit(L_snake_corps_p2[0], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
                             elif self_x == apres_x == avant_x :
                                 window.blit(L_snake_corps_p2[1], (snake[k]["position"][p][0]*taille_case, snake[k]["position"][p][1]*taille_case, snake[k]["position"][p][0]*taille_case+taille_case, snake[k]["position"][p][1]*taille_case+taille_case))
