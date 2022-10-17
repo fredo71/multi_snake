@@ -37,7 +37,11 @@ nb_case_a_mourir = 2
 case_mur = []
 custom_plateau = True   
 taille_depart = 7
-bloc_bonnus = []
+bloc_bonus = []
+name_bonus = ["add_nourriture", "invers_controle", "invulnérable"]
+invulnerable_time = 500
+inc_invulnerable1 = 0
+inc_invulnerable2 = 0
 
 
 vitesse_snake1 = 35
@@ -53,7 +57,7 @@ for y in range(plat_size[1]) :
 nb_player = 2
 snake = []
 for k in range(nb_player) :
-    snake.append({"position" : [(int(taille_plat/1.5)-p, int(taille_plat/4.29)*(k+1)) for p in range(taille_depart)], "direction" : "right", "mort" : False})
+    snake.append({"position" : [(int(taille_plat/1.5)-p, int(taille_plat/4.29)*(k+1)) for p in range(taille_depart)], "direction" : "right", "mort" : False, "invulnerable" : False})
 for k in range(len(snake)) :
     for p in range(len(snake[k]["position"])) :
         plateau[snake[k]["position"][p]] = "p"+str(k)
@@ -110,6 +114,7 @@ L_snake_corps_p2 = [snake_corps_p2, pygame.transform.rotate(snake_corps_p2, 90)]
 snake_corner_p2 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/snake_image/p2_corner_snake.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizey(taille_case)))
 L_snake_corner_p2 = [snake_corner_p2, pygame.transform.rotate(snake_corner_p2, 90), pygame.transform.rotate(snake_corner_p2, 180), pygame.transform.rotate(snake_corner_p2, 270)] #droite, haut, gauche, bas
 
+im_bonus = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/autre/bonus.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizex(taille_case)))
 
 
 
@@ -119,7 +124,7 @@ mur_im = pygame.transform.scale(pygame.image.load(resource_path0("./assets/image
 im_portal1 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/autre/portal1.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizex(taille_case)))
 im_portal2 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/autre/portal2.png")).convert_alpha(), (conv_sizex(taille_case),conv_sizex(taille_case)))
 L_portal = []
-time_portal_apaire = 1000
+time_portal_apaire = 2000
 inc_time_portal_apaire = 0
 
 im_nourriture_listes = ["humberger", "pizza", "gigot", "riz"] 
@@ -148,7 +153,7 @@ bg_in_game = pygame.transform.scale(pygame.image.load(resource_path0("./assets/i
 
 
 def deplacement(ind_snake) :
-    global snake, L_portal
+    global snake, L_portal, bloc_bonus, inc_invulnerable1, inc_invulnerable2
     #test si serpent va mourir
     try :
         depx, depy = 0,0
@@ -160,13 +165,35 @@ def deplacement(ind_snake) :
             depy = -1
         elif snake[ind_snake]["direction"] == "down" :
             depy = 1
-        if plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] not in ["vide", "nourriture", "portal"] : #si le serpent va mourir
+        if plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] not in ["vide", "nourriture", "portal", "bonus"] : #si le serpent va mourir
             return False
         elif plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] == "nourriture" : #si le serpent va manger
             snake[ind_snake]["position"].insert(0, (snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy))
             plateau[snake[ind_snake]["position"][0]] = "p"+str(ind_snake)
             nourriture.pop([nourriture[k][1] for k in range(len(nourriture))].index((snake[ind_snake]["position"][0][0], snake[ind_snake]["position"][0][1])))
             add_nourriture(True)
+        elif plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] == "bonus" : #si le serpent va manger
+            tamp = snake[ind_snake]["position"][0]
+            tamp2 = snake[ind_snake]["position"][len(snake[ind_snake]["position"])-1]
+            snake[ind_snake]["position"][0] = (snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)
+            for k in range(1,len(snake[ind_snake]["position"])) :
+                snake[ind_snake]["position"][k], tamp = tamp, snake[ind_snake]["position"][k]
+
+            for p in range(len(snake[ind_snake]["position"])) :
+                plateau[snake[ind_snake]["position"][p]] = "p"+str(ind_snake)
+            plateau[tamp2] = "vide"
+            if bloc_bonus[0][2] == "add_nourriture":
+                pass
+            elif bloc_bonus[0][2] == "invers_controle":
+                pass
+            elif bloc_bonus[0][2] == "invulnérable":
+                snake[ind_snake]["invulnerable"] = True
+                if ind_snake == 0 :
+                    inc_invulnerable1 = 0
+                if ind_snake == 1 :
+                    inc_invulnerable2 = 0
+                bloc_bonus = []
+                add_bonus()
         elif plateau[(snake[ind_snake]["position"][0][0]+depx, snake[ind_snake]["position"][0][1]+depy)] == "portal" :
             for k in range(2) :
                 tamp = snake[ind_snake]["position"][0]
@@ -222,6 +249,7 @@ def add_nourriture(add_vitesse):
         plateau[tamp] = "nourriture"
         nourriture.append([choice(im_nourriture_bdd), tamp])
     return add_nourriture
+
 def retourne (snakee):
     snakee.reverse()
     return snakee
@@ -320,6 +348,20 @@ def ajout_portal() :
             L_portal.append([im_portal, tamp])
     
 
+def add_bonus():
+    global plateau, bloc_bonus
+    L_tamp = []
+    for x in range(plat_size[0]) :
+        for y in range(plat_size[1]) :
+            if plateau[(x,y)] == "vide" :
+                L_tamp.append((x, y))
+    if len(L_tamp) == 0 :
+        print("jeu fini ou c'est cassé")
+    else :
+        tamp = choice(L_tamp)
+        plateau[tamp] = "bonus"
+        bloc_bonus.append([im_bonus, tamp, choice(name_bonus)])
+    return add_bonus
 
 
 
@@ -349,7 +391,7 @@ while main_loop:
                 plateau[(x,y)] = "vide" #"nourriture" = nouriture, "p0" = player 1 rouge, "p1" = player 2 bleu....
         snake = []
         for k in range(nb_player) :
-            snake.append({"position" : [(int(taille_plat/1.5)-p, int(taille_plat/4.29)*(k+1)) for p in range(taille_depart)], "direction" : "right", "mort" : False})
+            snake.append({"position" : [(int(taille_plat/1.5)-p, int(taille_plat/4.29)*(k+1)) for p in range(taille_depart)], "direction" : "right", "mort" : False, "invulnerable" : False})
         for k in range(len(snake)) :
             for p in range(len(snake[k]["position"])) :
                 plateau[snake[k]["position"][p]] = "p"+str(k)
@@ -529,6 +571,7 @@ while main_loop:
             create_custom_plateau(plateau)
         add_nourriture(False)(False)(False)
         ajout_portal()
+        add_bonus()
     while bataille_loop : #boucle du menu      ########\\\\\\\\\\\\\rajouter de la nourriture si elle est mangée
 
 		#Limitation de vitesse de la boucle
@@ -597,7 +640,11 @@ while main_loop:
                     tamp = deplacement(k)
                 if tamp == False :
                     try :
-                        for p in range(nb_case_a_mourir) :
+                        if snake[k]["invulnerable"] : 
+                            case_to_morir = 0
+                        else :
+                            case_to_morir = nb_case_a_mourir
+                        for p in range(case_to_morir) :
                             plateau[snake[k]["position"][0]] = "mur"
                             case_mur.append(snake[k]["position"][0])
                             snake[k]["position"].pop(0)
@@ -606,10 +653,23 @@ while main_loop:
                     except :
                         snake[k]["mort"] = True
 
+            if snake[k]["invulnerable"] and k == 0 :
+                if inc_invulnerable1 >= invulnerable_time :
+                    snake[k]["invulnerable"] = False
+                else :
+                    inc_invulnerable1+=1
+            if snake[k]["invulnerable"] and k == 1 :
+                if inc_invulnerable2 >= invulnerable_time :
+                    snake[k]["invulnerable"] = False
+                else :
+                    inc_invulnerable2+=1
+
         if inc_time_portal_apaire == time_portal_apaire or len(L_portal) == 0:
             ajout_portal()
         else :
             inc_time_portal_apaire+=1
+
+
 
         window.blit(bg_in_game, (0,0))
         for p in range(len(case_mur)) :
@@ -762,7 +822,8 @@ while main_loop:
         #affichage nourriture
         for foods in nourriture :
             window.blit(foods[0], (foods[1][0]*taille_case, foods[1][1]*taille_case, foods[1][0]*taille_case+taille_case, foods[1][1]*taille_case+taille_case))
-
+        for bloc in bloc_bonus :
+            window.blit(bloc[0], (bloc[1][0]*taille_case, bloc[1][1]*taille_case, bloc[1][0]*taille_case+taille_case, bloc[1][1]*taille_case+taille_case))
         end_game = True
         for mort in range(nb_player) :
             if snake[mort]["mort"] == False :
